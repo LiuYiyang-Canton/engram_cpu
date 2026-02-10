@@ -10,16 +10,16 @@ Date:   2026-02-10
 前向算子的信息如下：
 
 - 算子输入：
-  - $h \in \mathbb{R}^{B \times S \times H \times D}`，数据类型为 `fp32`$
-  - $`k \in \mathbb{R}^{B \times S \times H \times D}`，数据类型为 `fp32`$
-  - $`\gamma_1 \in \mathbb{R}^{H \times D}`，数据类型为 `fp32`$
-  - $`\gamma_2 \in \mathbb{R}^{H \times D}`，数据类型为 `fp32`$
+  - $h \in \mathbb{R}^{B \times S \times H \times D}，数据类型为 fp32$
+  - $k \in \mathbb{R}^{B \times S \times H \times D}，数据类型为 fp32$
+  - $\gamma_1 \in \mathbb{R}^{H \times D}，数据类型为 fp32$
+  - $\gamma_2 \in \mathbb{R}^{H \times D}，数据类型为 fp32$
 - 算子输出：
-  - $`out \in \mathbb{R}^{B \times S \times H}`，数据类型为 `fp32`$
+  - $out \in \mathbb{R}^{B \times S \times H}，数据类型为 fp32$
 
 其中 `B` 表示 batch 大小，`S` 表示序列长度，`H` 表示 `HC_MULT`，`D` 表示特征维度。
 
-对任意固定的 `(b, s, m)`（分别对应 batch、token、HC stream），定义向量：
+对任意固定的 $(b, s, m)$（分别对应 batch、token、HC stream），定义向量：
 
 $$
 \mathbf{h}_{bsm} = h[b,s,m,:] \in \mathbb{R}^{D}, \quad
@@ -59,27 +59,27 @@ y_{bsm}=\mathbf{u}_{bsm}^{\top}\mathbf{v}_{bsm}
 =\sum_{i=1}^{D}u_{bsm,i}v_{bsm,i}
 $$
 
-因此 `out \in \mathbb{R}^{B \times S \times H}`，且 `out[b,s,m]=y_{bsm}`。
+因此 $out \in \mathbb{R}^{B \times S \times H}，且 out[b,s,m]=y_{bsm}$.
 
 ## 反向传播
 
 反向算子的信息如下：
 
 - 算子输入：
-  - $`h \in \mathbb{R}^{B \times S \times H \times D}`，数据类型为 `fp32`$
-  - $`k \in \mathbb{R}^{B \times S \times H \times D}`，数据类型为 `fp32`$
-  - $`\gamma_1 \in \mathbb{R}^{H \times D}`，数据类型为 `fp32`$
-  - $`\gamma_2 \in \mathbb{R}^{H \times D}`，数据类型为 `fp32`$
-  - $`\delta \in \mathbb{R}^{B \times S \times H}`（即 `grad_out`），数据类型为 `fp32`$
+  - $h \in \mathbb{R}^{B \times S \times H \times D}，数据类型为 fp32$
+  - $k \in \mathbb{R}^{B \times S \times H \times D}，数据类型为 fp32$
+  - $\gamma_1 \in \mathbb{R}^{H \times D}，数据类型为 fp32$
+  - $\gamma_2 \in \mathbb{R}^{H \times D}，数据类型为 fp32$
+  - $\delta \in \mathbb{R}^{B \times S \times H}$（即 `grad_out`），数据类型为 fp32
 - 算子输出：
-  - $`\frac{\partial \mathcal{L}}{\partial h} \in \mathbb{R}^{B \times S \times H \times D}`，数据类型为 `fp32`$
-  - $`\frac{\partial \mathcal{L}}{\partial k} \in \mathbb{R}^{B \times S \times H \times D}`，数据类型为 `fp32`$
-  - $`\frac{\partial \mathcal{L}}{\partial \gamma_1} \in \mathbb{R}^{H \times D}`，数据类型为 `fp32`$
-  - $`\frac{\partial \mathcal{L}}{\partial \gamma_2} \in \mathbb{R}^{H \times D}`，数据类型为 `fp32`$
+  - $\frac{\partial \mathcal{L}}{\partial h} \in \mathbb{R}^{B \times S \times H \times D}，数据类型为 fp32$
+  - $\frac{\partial \mathcal{L}}{\partial k} \in \mathbb{R}^{B \times S \times H \times D}，数据类型为 fp32$
+  - $\frac{\partial \mathcal{L}}{\partial \gamma_1} \in \mathbb{R}^{H \times D}，数据类型为 fp32$
+  - $\frac{\partial \mathcal{L}}{\partial \gamma_2} \in \mathbb{R}^{H \times D}，数据类型为 fp32$
 - 通过 recompute 得到的中间变量（反向前先重算）：
-  - $`\mathrm{RMS}(\mathbf{h}_{bsm}), \mathrm{RMS}(\mathbf{k}_{bsm})`$
-  - $`\hat{\mathbf{h}}_{bsm}, \hat{\mathbf{k}}_{bsm}`$
-  - $`\mathbf{u}_{bsm}, \mathbf{v}_{bsm}, y_{bsm}`$
+  - $\mathrm{RMS}(\mathbf{h}_{bsm}), \mathrm{RMS}(\mathbf{k}_{bsm})$
+  - $\hat{\mathbf{h}}_{bsm}, \hat{\mathbf{k}}_{bsm}$
+  - $\mathbf{u}_{bsm}, \mathbf{v}_{bsm}, y_{bsm}$
 
 设上游梯度为：
 

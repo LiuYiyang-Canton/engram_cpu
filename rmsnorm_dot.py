@@ -10,7 +10,7 @@ from torch import nn
 class RMSNormDotProduct(nn.Module):
     """Compute dot products of RMS-normalized query/key groups."""
 
-    def __init__(self, eps: float = 1e-5) -> None:
+    def __init__(self, eps: float = 1e-6) -> None:
         """
         Initialize the RMSNorm dot-product module.
 
@@ -283,7 +283,7 @@ def run_self_test() -> None:
     gamma1 = torch.randn(hc_mult, d, dtype=torch.float32, device="cpu", requires_grad=True)
     gamma2 = torch.randn(hc_mult, d, dtype=torch.float32, device="cpu", requires_grad=True)
 
-    module = RMSNormDotProduct(eps=1e-5)
+    module = RMSNormDotProduct(eps=1e-6)
     out = module(h, k, gamma1, gamma2)
 
     expected_shape = (batch_size, seq_len, hc_mult)
@@ -291,7 +291,7 @@ def run_self_test() -> None:
     assert out.dtype == torch.float32, f"Expected dtype torch.float32, got {out.dtype}."
     assert out.device.type == "cpu", f"Expected CPU output, got {out.device}."
 
-    out_ref = _reference_rmsnorm_dot(h, k, gamma1, gamma2, eps=1e-5)
+    out_ref = _reference_rmsnorm_dot(h, k, gamma1, gamma2, eps=1e-6)
     rel_l2_out_error = _relative_l2_error(out, out_ref)
     assert rel_l2_out_error <= 1e-6, f"Output mismatch vs reference, rel_l2={rel_l2_out_error:.6e}."
 
